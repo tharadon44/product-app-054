@@ -12,22 +12,50 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-//datbase
+
 model Product {
-  id  Int @id @default(autoincrement())  
-  name  String
-  description String
-  price Float  @default(0.0)
-  createAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
-  order Order[] //onetomany
+ id Int @id @default(autoincrement())
+ name String
+ description String?
+ price       Float
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ orders Order[] // one-to-many
+ categoryId  Int?      
+category    Category? @relation(fields: [categoryId], references: [id])
 
 }
-//@id primarykey 
+
 model Order {
-  id  Int @id @default(autoincrement())  
-  productid Int
-  createAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
-  product Product @relation(fields: [productid], references: [id])
+ id Int @id @default(autoincrement())
+ productId Int
+  createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ product Product @relation(fields: [productId], references: [id])
+}
+
+model User {
+ id Int @id @default(autoincrement())
+ name String
+ email String @unique
+ password String
+ createdAt DateTime @default(now())
+
+ posts BlogPost[]
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[]
+}
+
+model BlogPost {
+ id Int @id @default(autoincrement())
+ title String
+ content String
+ published Boolean @default(false)
+ createdAt DateTime @default(now())
+ authorId Int
+ author User @relation(fields: [authorId], references: [id])
 }
